@@ -36,19 +36,22 @@ footer { margin-top:48px; font-size:13px; color:var(--muted); }
 </div>
 <h2>Frequently asked</h2>
 <div class="card">
-<p><strong>Does Prevoy need an account or a connection?</strong><br>No. Everything is stored on your device. The only network request is the optional exchange-rate fetch you trigger yourself in Money and connectivity.</p>
+<p><strong>Does Prevoy need an account or a connection?</strong><br>No account, ever. Your trips are stored on your device and the plan works offline. Prevoy goes online only for three optional things: Ask Prevoy questions you send, Apple Weather for your trip dates, and the exchange-rate fetch you trigger in Money and connectivity.</p>
+<p><strong>Where do Ask Prevoy answers come from?</strong><br>From OpenAI's models, through Prevoy's own server. Answers can be wrong or out of date, so always confirm entry, visa and health rules with the official source Prevoy links to.</p>
 <p><strong>Are the entry and visa rules guaranteed?</strong><br>No. Prevoy shows general guidance with a link to the official source and the month the data was reviewed. Rules change and depend on your nationality. Always confirm with the official source before you travel.</p>
 <p><strong>How do I move my trips to a new phone?</strong><br>Settings → Backup → Export backup, save the file to iCloud Drive, then Import backup on the new device.</p>
 <p><strong>Does Prevoy store my passport number?</strong><br>Never. It only keeps nationality and dates to check validity and entry rules.</p>
 </div>
 <h2 id="privacy">Privacy policy</h2>
 <div class="card">
-<p class="kick">Effective 2026-10-09</p>
-<p>Prevoy does not collect, store or transmit personal data. There are no accounts, no analytics, no advertising and no third-party SDKs.</p>
-<p><strong>Data on your device.</strong> Trips, checklists, your traveler profile and optional medical card are stored only on your device, in the app's private container, and in backups you choose to make. Deleting the app deletes this data.</p>
-<p><strong>Network access.</strong> The app makes one kind of optional network request: when you tap "Fetch rate" in Money and connectivity, it asks api.frankfurter.app for a reference exchange rate. The request contains only two currency codes. No other data leaves your device.</p>
+<p class="kick">Effective 2026-10-24</p>
+<p>Prevoy has no accounts, no analytics, no advertising, no tracking and no third-party SDKs. Your trips stay on your device. The few things that leave it are described below, and only happen when you use the feature.</p>
+<p><strong>Data on your device.</strong> Trips, checklists, your traveler profile, optional medical card and Ask Prevoy conversations are stored only on your device, in the app's private container, and in backups you choose to make. Deleting the app deletes this data.</p>
+<p><strong>Ask Prevoy (AI answers).</strong> Ask Prevoy is off until you allow it. When you ask a question, the app sends your question, the recent messages in that chat, and a short trip summary to Prevoy's server, which passes them to OpenAI to write the answer. The trip summary contains cities, countries and airport codes, your home country and currency, dates, the number of travelers, passport nationality and expiry month, trip style, the packing weather, the flights you selected (airline, flight number, times, terminals, ticket and bag status), and Prevoy's reference notes for the countries involved, plus today's date and your device language. It never contains your name, passport numbers (Prevoy never stores them), booking references, seats, notes, emergency contacts, medical card, medications, insurance or money details. Prevoy's server does not store questions or answers. To limit misuse it counts questions per day using a one-way code made from your IP address and a random key that changes every day; the address itself is never stored, and the codes and keys are deleted within two days. OpenAI processes requests under its API terms: it does not use them to train its models and may keep them for up to 30 days to monitor abuse. You can turn Ask Prevoy off and delete your conversations in Settings at any time.</p>
+<p><strong>Weather.</strong> To fill in the expected weather for each trip automatically, the app asks Apple's map service for the coordinates of your destination city and asks Apple Weather for the forecast, or for the same dates in past years, at that place. These requests contain the destination and the dates, not information about you, and are handled by Apple under Apple's privacy policy.</p>
+<p><strong>Exchange rates.</strong> When you tap "Fetch rate" in Money and connectivity, the app asks api.frankfurter.app for a reference exchange rate. The request contains only two currency codes.</p>
 <p><strong>Notifications.</strong> Reminders are local notifications scheduled on your device. No notification service is used.</p>
-<p><strong>Children.</strong> Prevoy is not directed at children under 13 and collects no data from anyone.</p>
+<p><strong>Children.</strong> Prevoy is not directed at children under 13.</p>
 <p><strong>Changes.</strong> If this policy changes, the new version will be posted on this page with a new effective date.</p>
 <p><strong>Contact.</strong> <a href="mailto:alper92alper@gmail.com">alper92alper@gmail.com</a></p>
 </div>

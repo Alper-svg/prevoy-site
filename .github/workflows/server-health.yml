@@ -1,0 +1,80 @@
+name: Ask Prevoy server health
+
+# Asks the Ask Prevoy server how it is, every 30 minutes. When a run fails, GitHub emails the repository owner
+# (Settings, Notifications, Actions: "Failed workflows only"). One email per incident: while the server stays
+# unhealthy the later checks pass quietly, with a reminder about once a day.
+
+on:
+  schedule:
+    - cron: "11,41 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: server-health
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Last result
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: health-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: health-
+
+      - name: Ask the server
+        run: |
+          url="${HEALTH_URL:-https://prevoy-assistant.alper92alper.workers.dev/health}"
+          pause="${PAUSE:-20}"
+          mkdir -p state
+          before=$(cat state/failures 2>/dev/null || echo 0)
+          healthy=no
+          code=000
+          for attempt in 1 2 3; do
+            code=$(curl -sS -m 20 -o body.json -w "%{http_code}" "$url" || echo 000)
+            echo "attempt $attempt: HTTP $code $(cat body.json 2>/dev/null)"
+            if [ "$code" = "200" ] && grep -q '"ok":true' body.json; then healthy=yes; break; fi
+            sleep "$pause"
+          done
+          if [ "$healthy" = "yes" ]; then
+            if [ "$before" != "0" ]; then echo "::notice::The Ask Prevoy server is healthy again after $before failed checks."; fi
+            echo 0 > state/failures
+            exit 0
+          fi
+          now=$((before + 1))
+          echo "$now" > state/failures
+          problem=$(sed -n 's/.*"problem":"\([a-z_]*\)".*/\1/p' body.json 2>/dev/null || true)
+          case "$problem" in
+            openai_credit) hint="The OpenAI credit has run out. Add credit at platform.openai.com under Billing." ;;
+            openai_key) hint="OpenAI refuses the API key. Create a new key and set it as the OPENAI_API_KEY secret of the Worker." ;;
+            openai_model|openai_access) hint="OpenAI refuses the model. Check MODEL in the Worker's settings." ;;
+            spend_ceiling|daily_cap) hint="Today's ceiling for questions was reached. It opens again at midnight UTC. If this happens often, raise DAILY_BUDGET_USD or look for misuse." ;;
+            not_configured) hint="The Worker has no OPENAI_API_KEY secret." ;;
+            *) hint="The server did not answer as healthy (HTTP $code)." ;;
+          esac
+          if [ "$now" = "1" ] || [ $((now % 48)) -eq 0 ]; then
+            echo "::error::Ask Prevoy server: ${problem:-unreachable}. $hint"
+            exit 1
+          fi
+          echo "::warning::Still unhealthy (check $now, ${problem:-unreachable}). Already reported."
+
+      - name: Remember this result
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: health-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Keep the schedule alive
+        # GitHub pauses scheduled workflows after 60 days without repository activity.
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/server-health.yml/enable" || true
